@@ -127,7 +127,7 @@ TOSTtwo<-function(m1,m2,sd1,sd2,n1,n2,low_eqbound_d, high_eqbound_d, alpha, var.
   print(CIresults)
   invisible(list(diff <- dif,
                  NHST_t = t,
-                 NHST_p = p,
+                 NHST_p = pttest,
                  TOST_t1 = t1,
                  TOST_p1 = p1,
                  TOST_t2 = t2,
