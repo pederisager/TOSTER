@@ -115,5 +115,21 @@ TOSTtwo<-function(m1,m2,sd1,sd2,n1,n2,low_eqbound_d, high_eqbound_d, alpha, var.
   cat("\n")
   cat("TOST confidence interval:\n")
   print(CIresults)
-  invisible(list(TOST_t1=t1,TOST_p1=p1,TOST_t2=t2,TOST_p2=p2, TOST_df=degree_f,alpha=alpha,low_eqbound=low_eqbound,high_eqbound=high_eqbound,low_eqbound_d=low_eqbound_d,high_eqbound_d=high_eqbound_d, LL_CI_TOST=LL90,UL_CI_TOST=UL90))
+  invisible(list(diff <- dif,
+                 NHST_t = t,
+                 NHST_p = p,
+                 TOST_t1 = t1,
+                 TOST_p1 = p1,
+                 TOST_t2 = t2,
+                 TOST_p2 = p2,
+                 TOST_t  = ttost,  # Save the lowest TOST t value, used as equivalence test value
+                 TOST_p  = ptost,  # Save the highest TOST p value, used as equivalence test p value
+                 TOST_df = degree_f,
+                 alpha = alpha,
+                 low_eqbound = low_eqbound,
+                 high_eqbound = high_eqbound,
+                 low_eqbound_d = low_eqbound_d,
+                 high_eqbound_d = high_eqbound_d,
+                 LL_CI_TOST = LL90,
+                 UL_CI_TOST = UL90))
 }
