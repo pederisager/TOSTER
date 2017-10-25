@@ -36,7 +36,7 @@
 #' @export
 #'
 
-TOSTtwo<-function(m1,m2,sd1,sd2,n1,n2,low_eqbound_d, high_eqbound_d, alpha, var.equal, plot = TRUE){
+TOSTtwo<-function(m1,m2,sd1,sd2,n1,n2,low_eqbound_d, high_eqbound_d, alpha, var.equal, side.effects = TRUE){
   if(missing(alpha)) {
     alpha<-0.05
   }
@@ -83,48 +83,53 @@ TOSTtwo<-function(m1,m2,sd1,sd2,n1,n2,low_eqbound_d, high_eqbound_d, alpha, var.
   TOSToutcome<-ifelse(ptost<alpha,"significant","non-significant")
 
   # Plot results
-  if (plot == TRUE) {
-  plot(NA, ylim=c(0,1), xlim=c(min(LL90,low_eqbound)-max(UL90-LL90, high_eqbound-low_eqbound)/10, max(UL90,high_eqbound)+max(UL90-LL90, high_eqbound-low_eqbound)/10), bty="l", yaxt="n", ylab="",xlab="Mean Difference")
-  points(x=dif, y=0.5, pch=15, cex=2)
-  abline(v=high_eqbound, lty=2)
-  abline(v=low_eqbound, lty=2)
-  abline(v=0, lty=2, col="grey")
-  segments(LL90,0.5,UL90,0.5, lwd=3)
-  segments(LL95,0.5,UL95,0.5, lwd=1)
-  title(main=paste("Equivalence bounds ",round(low_eqbound,digits=3)," and ",round(high_eqbound,digits=3),"\nMean difference = ",round(dif,digits=3)," \n TOST: ", 100*(1-alpha*2),"% CI [",round(LL90,digits=3),";",round(UL90,digits=3),"] ", TOSToutcome," \n NHST: ", 100*(1-alpha),"% CI [",round(LL95,digits=3),";",round(UL95,digits=3),"] ", testoutcome,sep=""), cex.main=1)
+  if (side.effects == TRUE) {
+    plot(NA, ylim=c(0,1), xlim=c(min(LL90,low_eqbound)-max(UL90-LL90, high_eqbound-low_eqbound)/10, max(UL90,high_eqbound)+max(UL90-LL90, high_eqbound-low_eqbound)/10), bty="l", yaxt="n", ylab="",xlab="Mean Difference")
+    points(x=dif, y=0.5, pch=15, cex=2)
+    abline(v=high_eqbound, lty=2)
+    abline(v=low_eqbound, lty=2)
+    abline(v=0, lty=2, col="grey")
+    segments(LL90,0.5,UL90,0.5, lwd=3)
+    segments(LL95,0.5,UL95,0.5, lwd=1)
+    title(main=paste("Equivalence bounds ",round(low_eqbound,digits=3)," and ",round(high_eqbound,digits=3),"\nMean difference = ",round(dif,digits=3)," \n TOST: ", 100*(1-alpha*2),"% CI [",round(LL90,digits=3),";",round(UL90,digits=3),"] ", TOSToutcome," \n NHST: ", 100*(1-alpha),"% CI [",round(LL95,digits=3),";",round(UL95,digits=3),"] ", testoutcome,sep=""), cex.main=1)
   }
 
-  # Print TOST and t-test results in message form
-  if(var.equal == TRUE) {
-    message(cat("Using alpha = ",alpha," Student's t-test was ",testoutcome,", t(",degree_f,") = ",t,", p = ",pttest,sep=""))
+  #  If side effects are turned on, print outpout of TOST to screen
+  if (side.effects == TRUE) {
+    # Print TOST and t-test results in message form
+    if (var.equal == TRUE) {
+      message(cat("Using alpha = ",alpha," Student's t-test was ",testoutcome,", t(",degree_f,") = ",t,", p = ",pttest,sep=""))
+      cat("\n")
+      message(cat("Using alpha = ",alpha," the equivalence test based on Student's t-test was ",TOSToutcome,", t(",degree_f,") = ",ttost,", p = ",ptost,sep=""))
+    } else {
+      message(cat("Using alpha = ",alpha," Welch's t-test was ",testoutcome,", t(",degree_f,") = ",t,", p = ",pttest,sep=""))
+      cat("\n")
+      message(cat("Using alpha = ",alpha," the equivalence test based on Welch's t-test  was ",TOSToutcome,", t(",degree_f,") = ",ttost,", p = ",ptost,sep=""))
+    }
+
+    # Print TOST and t-test results in table form
+    TOSTresults<-data.frame(t1,p1,t2,p2,degree_f)
+    colnames(TOSTresults) <- c("t-value 1","p-value 1","t-value 2","p-value 2","df")
+    bound_d_results<-data.frame(low_eqbound_d,high_eqbound_d)
+    colnames(bound_d_results) <- c("low bound d","high bound d")
+    bound_results<-data.frame(low_eqbound,high_eqbound)
+    colnames(bound_results) <- c("low bound raw","high bound raw")
+    CIresults<-data.frame(LL90,UL90)
+    colnames(CIresults) <- c(paste("Lower Limit ",100*(1-alpha*2),"% CI raw",sep=""),paste("Upper Limit ",100*(1-alpha*2),"% CI raw",sep=""))
+    cat("TOST results:\n")
+    print(TOSTresults)
     cat("\n")
-    message(cat("Using alpha = ",alpha," the equivalence test based on Student's t-test was ",TOSToutcome,", t(",degree_f,") = ",ttost,", p = ",ptost,sep=""))
-  } else {
-    message(cat("Using alpha = ",alpha," Welch's t-test was ",testoutcome,", t(",degree_f,") = ",t,", p = ",pttest,sep=""))
+    cat("Equivalence bounds (Cohen's d):\n")
+    print(bound_d_results)
     cat("\n")
-    message(cat("Using alpha = ",alpha," the equivalence test based on Welch's t-test  was ",TOSToutcome,", t(",degree_f,") = ",ttost,", p = ",ptost,sep=""))
+    cat("Equivalence bounds (raw scores):\n")
+    print(bound_results)
+    cat("\n")
+    cat("TOST confidence interval:\n")
+    print(CIresults)
   }
 
-  # Print TOST and t-test results in table form
-  TOSTresults<-data.frame(t1,p1,t2,p2,degree_f)
-  colnames(TOSTresults) <- c("t-value 1","p-value 1","t-value 2","p-value 2","df")
-  bound_d_results<-data.frame(low_eqbound_d,high_eqbound_d)
-  colnames(bound_d_results) <- c("low bound d","high bound d")
-  bound_results<-data.frame(low_eqbound,high_eqbound)
-  colnames(bound_results) <- c("low bound raw","high bound raw")
-  CIresults<-data.frame(LL90,UL90)
-  colnames(CIresults) <- c(paste("Lower Limit ",100*(1-alpha*2),"% CI raw",sep=""),paste("Upper Limit ",100*(1-alpha*2),"% CI raw",sep=""))
-  cat("TOST results:\n")
-  print(TOSTresults)
-  cat("\n")
-  cat("Equivalence bounds (Cohen's d):\n")
-  print(bound_d_results)
-  cat("\n")
-  cat("Equivalence bounds (raw scores):\n")
-  print(bound_results)
-  cat("\n")
-  cat("TOST confidence interval:\n")
-  print(CIresults)
+  #  Return output of TOST in list format
   invisible(list(diff <- dif,
                  NHST_t = t,
                  NHST_p = pttest,
