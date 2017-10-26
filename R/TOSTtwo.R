@@ -146,5 +146,7 @@ TOSTtwo<-function(m1,m2,sd1,sd2,n1,n2,low_eqbound_d, high_eqbound_d, alpha, var.
                  low_eqbound_d  = low_eqbound_d,
                  high_eqbound_d = high_eqbound_d,
                  LL_CI_TOST = LL90,
-                 UL_CI_TOST = UL90))
+                 UL_CI_TOST = UL90,
+                 LL_CI_TTEST = LL95,
+                 UL_CI_TTEST = UL95))
 }
